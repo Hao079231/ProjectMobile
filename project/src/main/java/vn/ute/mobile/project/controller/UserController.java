@@ -3,7 +3,6 @@ package vn.ute.mobile.project.controller;
 import jakarta.validation.Valid;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

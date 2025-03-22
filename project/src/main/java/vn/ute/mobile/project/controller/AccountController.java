@@ -11,6 +11,8 @@ import vn.ute.mobile.project.dto.ApiMessageDto;
 import vn.ute.mobile.project.dto.ErrorCode;
 import vn.ute.mobile.project.exception.BabRequestException;
 import vn.ute.mobile.project.form.account.CreateAccountForm;
+import vn.ute.mobile.project.form.login.CreateAdminLogin;
+import vn.ute.mobile.project.form.login.CreateUserLogin;
 import vn.ute.mobile.project.mapper.AccountMapper;
 import vn.ute.mobile.project.model.Account;
 import vn.ute.mobile.project.repository.AccountRepository;
@@ -36,6 +38,27 @@ public class AccountController {
     account.setStatus(AppConstant.ACCOUNT_STATUS_ACTIVE);
     accountRepository.save(account);
     apiMessageDto.setMessage("Register account successful");
+    return apiMessageDto;
+  }
+
+  @PostMapping("/login")
+  public ApiMessageDto<String> login(@RequestBody @Valid CreateAdminLogin request){
+    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+    Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword()).
+        orElseThrow(() -> new BabRequestException("Username or password invalid", ErrorCode.ACCOUNT_ERROR_BADREQUEST));
+    apiMessageDto.setMessage("Login successful");
+    return apiMessageDto;
+  }
+
+  @PostMapping("/user-login")
+  public ApiMessageDto<String> loginByUser(@RequestBody @Valid CreateUserLogin request){
+    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+    Account account = accountRepository.findByEmailAndPassword(request.getEmail(), request.getPassword()).
+        orElseThrow(() -> new BabRequestException("Email or password invalid", ErrorCode.ACCOUNT_ERROR_BADREQUEST));
+    if (account.getStatus().equals(AppConstant.ACCOUNT_STATUS_PENDING)){
+      throw new BabRequestException("Account not active", ErrorCode.ACCOUNT_ERROR_NOTACTIVE);
+    }
+    apiMessageDto.setMessage("Login successful");
     return apiMessageDto;
   }
 }
