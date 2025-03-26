@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import vn.ute.mobile.project.dto.user.UserDto;
 import vn.ute.mobile.project.form.user.CreateUserForm;
 import vn.ute.mobile.project.model.User;
 
@@ -18,4 +19,11 @@ public interface UserMapper {
   @BeanMapping(ignoreByDefault = true)
   @Named("fromCreateUserToEntity")
   User fromCreateUserToEntity(CreateUserForm createUserForm);
+
+  @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToDto")
+  @Mapping(source = "phone", target = "phone")
+  @Mapping(source = "gender", target = "gender")
+  @BeanMapping(ignoreByDefault = true)
+  @Named("fromUserToDto")
+  UserDto fromUserToDto(User user);
 }
