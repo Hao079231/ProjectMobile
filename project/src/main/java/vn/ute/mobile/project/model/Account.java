@@ -25,10 +25,8 @@ public class Account extends Auditable{
   private String username;
   @Column(name = "full_name")
   private String fullname;
-  @Column(name = "email")
+  @Column(name = "email", unique = true)
   private String email;
   @Column(name = "pass_word")
   private String password;
-  @Column(name = "is_admin")
-  private Boolean isAdmin;
 }

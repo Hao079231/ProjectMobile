@@ -3,55 +3,63 @@ package vn.ute.mobile.project.controller;
 import jakarta.validation.Valid;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.ute.mobile.project.config.JwtUtil;
 import vn.ute.mobile.project.constant.AppConstant;
 import vn.ute.mobile.project.dto.ApiMessageDto;
+import vn.ute.mobile.project.dto.AuthDto;
 import vn.ute.mobile.project.dto.ErrorCode;
 import vn.ute.mobile.project.exception.BabRequestException;
 import vn.ute.mobile.project.exception.NotFoundException;
+import vn.ute.mobile.project.form.CreateAuthForm;
 import vn.ute.mobile.project.form.user.CreateUserForm;
 import vn.ute.mobile.project.form.verify.CreateVerifyUserForm;
-import vn.ute.mobile.project.mapper.AccountMapper;
 import vn.ute.mobile.project.mapper.UserMapper;
 import vn.ute.mobile.project.model.Account;
 import vn.ute.mobile.project.model.User;
 import vn.ute.mobile.project.repository.AccountRepository;
 import vn.ute.mobile.project.repository.UserRepository;
 import vn.ute.mobile.project.service.EmailService;
+import vn.ute.mobile.project.service.impl.UserServiceImpl;
 
 @RestController
-@RequestMapping("/v1/api")
-public class UserController {
+@RequestMapping("/v1/api/auth/")
+public class AuthenticationController {
+  @Autowired
+  private AuthenticationManager authenticationManager;
+  @Autowired
+  private JwtUtil jwtUtil;
+  @Autowired
+  private UserServiceImpl userService;
+  @Autowired
+  private AccountRepository accountRepository;
   @Autowired
   private UserRepository userRepository;
-
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+  @Autowired
+  private EmailService emailService;
   @Autowired
   private UserMapper userMapper;
 
-  @Autowired
-  private AccountRepository accountRepository;
-
-  @Autowired
-  private AccountMapper accountMapper;
-
-  @Autowired
-  private EmailService emailService;
-
-  @PostMapping("/user-register")
-  public ApiMessageDto<String> registerByUser(@RequestBody @Valid CreateUserForm request){
+  @PostMapping("/register")
+  public ApiMessageDto<String> register(@RequestBody @Valid CreateUserForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    if (accountRepository.findFirstByUsername(request.getUsername()) != null){
+    if (accountRepository.findAccountByUsername(request.getUsername()) != null){
       throw new BabRequestException("User name already exist", ErrorCode.ACCOUNT_ERROR_USERNAME_EXIST);
     }
     Account account = new Account();
     account.setUsername(request.getUsername());
     account.setFullname(request.getFullname());
     account.setEmail(request.getEmail());
-    account.setPassword(request.getPassword());
-    account.setIsAdmin(AppConstant.ACCOUNT_IS_USER);
+    account.setPassword(passwordEncoder.encode(request.getPassword()));
     account.setStatus(AppConstant.ACCOUNT_STATUS_PENDING);
 
     String otpCode = generateOTP();
@@ -66,8 +74,8 @@ public class UserController {
     return apiMessageDto;
   }
 
-  @PostMapping("/user-verify")
-  public ApiMessageDto<String> verifyUser(@RequestBody @Valid CreateVerifyUserForm request){
+  @PostMapping("/verify")
+  public ApiMessageDto<String> verify(@RequestBody @Valid CreateVerifyUserForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
     Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() ->
         new NotFoundException("Account not found", ErrorCode.ACCOUNT_ERROR_NOTFOUND));
@@ -82,6 +90,28 @@ public class UserController {
     user.setStatus(AppConstant.ACCOUNT_STATUS_ACTIVE);
     userRepository.save(user);
     apiMessageDto.setMessage("Verify successful");
+    return apiMessageDto;
+  }
+
+  @PostMapping("/login")
+  public ApiMessageDto<AuthDto> login(@RequestBody @Valid CreateAuthForm request){
+    ApiMessageDto<AuthDto> apiMessageDto = new ApiMessageDto<>();
+    Account user = accountRepository.findAccountByUsername(request.getUsername());
+    if (user == null){
+      throw new NotFoundException("Account not found", ErrorCode.ACCOUNT_ERROR_NOTFOUND);
+    }
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+      throw new BabRequestException("Invalid username or password", ErrorCode.ACCOUNT_ERROR_BADREQUEST);
+    }
+
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+    UserDetails userDetails = userService.loadUserByUsername(request.getUsername());
+    String token = jwtUtil.generateToken(user.getUsername(), user.getId());
+    AuthDto authDto = new AuthDto(true, token);
+    apiMessageDto.setData(authDto);
+    apiMessageDto.setMessage("Login successful");
     return apiMessageDto;
   }
 
