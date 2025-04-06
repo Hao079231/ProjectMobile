@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class JwtUtil {
   @Value("${jwt.secret}")
   private String secret;
+
   @Value("${jwt.expiration}")
   private Long expiration;
 
@@ -30,8 +31,19 @@ public class JwtUtil {
         .compact();
   }
 
+  public Claims extractAllClaims(String token) {
+    JwtParser parser = Jwts.parserBuilder()
+        .setSigningKey(getSigningKey())
+        .build();
+    return parser.parseClaimsJws(token).getBody();
+  }
+
   public String extractUsername(String token) {
     return getClaims(token).getSubject();
+  }
+
+  public Long extractUserId(String token) {
+    return Long.parseLong(extractAllClaims(token).get("userId").toString());
   }
 
   private Claims getClaims(String token) {
