@@ -1,5 +1,6 @@
 package vn.ute.mobile.project.controller;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import vn.ute.mobile.project.model.Deck;
 import vn.ute.mobile.project.model.User;
 import vn.ute.mobile.project.model.criteria.DeckCriteria;
 import vn.ute.mobile.project.repository.DeckRepository;
+import vn.ute.mobile.project.repository.PlashCardRepository;
 import vn.ute.mobile.project.repository.UserRepository;
 
 @RestController
@@ -40,6 +42,9 @@ public class DeckController {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private PlashCardRepository plashCardRepository;
 
   @PostMapping("/create")
   public ApiMessageDto<String> create(@RequestBody @Valid CreateDeckForm request){
@@ -72,8 +77,7 @@ public class DeckController {
       throw new RuntimeException("User not authenticated");
     }
     CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
-    Long userId = principal.getUserId();
-    request.setUserId(userId);
+    request.setUserId(principal.getUserId());
     Page<Deck> decks = deckRepository.findAll(request.getSpecification(), pageable);
     List<DeckDto> list = deckMapper.fromDeckToDtoList(decks.getContent());
     ResponseListDto<List<DeckDto>> response = new ResponseListDto<>(list, decks.getTotalElements(), decks.getTotalPages());
@@ -117,6 +121,7 @@ public class DeckController {
     return apiMessageDto;
   }
 
+  @Transactional
   @DeleteMapping("/delete/{id}")
   public ApiMessageDto<String> delete(@PathVariable Long id){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
@@ -130,6 +135,7 @@ public class DeckController {
         .orElseThrow(() -> new NotFoundException("User not found"));
     Deck deck = deckRepository.findByIdAndUserId(id, user.getId()).orElseThrow(()
         -> new NotFoundException("Deck not found"));
+    plashCardRepository.deleteByDeckId(deck.getId());
     deckRepository.delete(deck);
     apiMessageDto.setMessage("Delete deck successfully");
     return apiMessageDto;

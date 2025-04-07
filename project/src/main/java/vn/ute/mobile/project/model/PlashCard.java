@@ -36,6 +36,9 @@ public class PlashCard extends Auditable{
   @Column(name = "image")
   private String image;
   @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+  @ManyToOne
   @JoinColumn(name = "deck_id")
   private Deck deck;
 }
