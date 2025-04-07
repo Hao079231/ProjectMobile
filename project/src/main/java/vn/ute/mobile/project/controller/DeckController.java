@@ -82,7 +82,7 @@ public class DeckController {
     return apiMessageDto;
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/get/{id}")
   public ApiMessageDto<DeckDto> getDeck(@PathVariable Long id){
     ApiMessageDto<DeckDto> apiMessageDto = new ApiMessageDto<>();
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -91,7 +91,8 @@ public class DeckController {
     }
     CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
     User user = userRepository.findById(principal.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-    Deck deck = deckRepository.findById(id).orElseThrow(() -> new NotFoundException("Deck not found"));
+    Deck deck = deckRepository.findByIdAndUserId(id, user.getId())
+        .orElseThrow(() -> new NotFoundException("Deck not found"));
     apiMessageDto.setData(deckMapper.fromDeckToDto(deck));
     apiMessageDto.setMessage("Get deck successfully");
     return apiMessageDto;
@@ -100,21 +101,15 @@ public class DeckController {
   @PutMapping("/update")
   public ApiMessageDto<String> update(@RequestBody @Valid UpdateDeckForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    // Lấy Authentication từ SecurityContext
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
       throw new RuntimeException("User not authenticated");
     }
-
-    // Lấy userId từ principal
     CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
     Long userId = principal.getUserId();
-
-    // Tìm user từ database
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
-
-    Deck deck = deckRepository.findById(request.getId()).orElseThrow(()
+    Deck deck = deckRepository.findByIdAndUserId(request.getId(), user.getId()).orElseThrow(()
     -> new NotFoundException("Deck not found"));
     deckMapper.updateDeckToEntity(request, deck);
     deckRepository.save(deck);
@@ -133,8 +128,7 @@ public class DeckController {
     Long userId = principal.getUserId();
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
-
-    Deck deck = deckRepository.findById(id).orElseThrow(()
+    Deck deck = deckRepository.findByIdAndUserId(id, user.getId()).orElseThrow(()
         -> new NotFoundException("Deck not found"));
     deckRepository.delete(deck);
     apiMessageDto.setMessage("Delete deck successfully");

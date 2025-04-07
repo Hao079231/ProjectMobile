@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "db_deck")
@@ -22,7 +23,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Deck extends Auditable{
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GenericGenerator(name = "idGenerator", strategy = "vn.ute.mobile.project.service.id.CustomIdGenerator")
+  @GeneratedValue(generator = "idGenerator")
   private Long id;
   @Column(name = "name")
   private String name;
