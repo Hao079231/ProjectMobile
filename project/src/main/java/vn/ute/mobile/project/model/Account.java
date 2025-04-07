@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "db_account")
@@ -19,7 +20,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Account extends Auditable{
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GenericGenerator(name = "idGenerator", strategy = "vn.ute.mobile.project.service.id.CustomIdGenerator")
+  @GeneratedValue(generator = "idGenerator")
   private Long id;
   @Column(name = "user_name", unique = true)
   private String username;

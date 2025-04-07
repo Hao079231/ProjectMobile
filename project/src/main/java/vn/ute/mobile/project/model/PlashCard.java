@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "db_plash_card")
@@ -21,7 +22,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PlashCard extends Auditable{
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GenericGenerator(name = "idGenerator", strategy = "vn.ute.mobile.project.service.id.CustomIdGenerator")
+  @GeneratedValue(generator = "idGenerator")
   private Long id;
   @Column(name = "english_word")
   private String englishWord;
