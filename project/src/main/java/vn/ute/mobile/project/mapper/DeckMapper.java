@@ -34,5 +34,5 @@ public interface DeckMapper {
   DeckDto fromDeckToDto(Deck deck);
 
   @IterableMapping(elementTargetType = DeckDto.class, qualifiedByName = "fromDeckToDto")
-  List<DeckDto> fromDeckToDtoList(List<Deck> phoneCalls);
+  List<DeckDto> fromDeckToDtoList(List<Deck> decks);
 }
