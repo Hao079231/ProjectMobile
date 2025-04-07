@@ -7,8 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import vn.ute.mobile.project.dto.ApiMessageDto;
 
@@ -58,5 +61,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     apiMessageDto.setData(errors);
 
     return new ResponseEntity<>(apiMessageDto, HttpStatus.BAD_REQUEST);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleNoHandlerFoundException(
+      NoHandlerFoundException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+
+    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+    apiMessageDto.setResult(false);
+    apiMessageDto.setMessage("Endpoint not found: " + ex.getRequestURL());
+    apiMessageDto.setCode("404");
+
+    return new ResponseEntity<>(apiMessageDto, HttpStatus.NOT_FOUND);
   }
 }
