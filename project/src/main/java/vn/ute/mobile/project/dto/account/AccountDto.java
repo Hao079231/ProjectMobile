@@ -1,6 +1,5 @@
 package vn.ute.mobile.project.dto.account;
 
-import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
