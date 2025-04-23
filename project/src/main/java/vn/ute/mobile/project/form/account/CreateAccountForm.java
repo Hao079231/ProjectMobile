@@ -11,8 +11,6 @@ import vn.ute.mobile.project.validation.Password;
 public class CreateAccountForm {
   @NotEmpty(message = "user name cannot null")
   private String username;
-  @NotEmpty(message = "full name cannot null")
-  private String fullname;
   @Email
   @NotEmpty(message = "email cannot null")
   private String email;

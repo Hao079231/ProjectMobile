@@ -9,8 +9,4 @@ public class ErrorCode {
   public static final String ACCOUNT_ERROR_BADREQUEST = "ERROR-ACCOUNT-004";
   public static final String ACCOUNT_ERROR_NOTACTIVE = "ERROR-ACCOUNT-005";
 
-
-  // Error code dictionary
-  public static final String DICTIONARY_ERROR_NOTFOUND = "ERROR-DICTIONARY-001";
-  public static final String DICTIONARY_ERROR_API_CALL = "ERROR-DICTIONARY-002";
 }

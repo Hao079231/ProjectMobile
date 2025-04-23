@@ -7,8 +7,11 @@ import vn.ute.mobile.project.dto.account.AccountDto;
 @Getter
 @Setter
 public class UserDto {
-  private Long id;
+  private String id;
   private String phone;
-  private Integer gender;
+  private String address;
+  private String image;
+  private Integer score;
+  private Integer ordinalNumber;
   private AccountDto account;
 }

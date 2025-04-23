@@ -6,5 +6,5 @@ import vn.ute.mobile.project.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
-  User findByIdAndOtp(Long id, String otp);
+  User findByIdAndOtp(String id, String otp);
 }
