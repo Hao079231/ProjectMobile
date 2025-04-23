@@ -12,6 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 public class CustomUserPrincipal {
   private UserDetails userDetails;
-  private Long userId;
+  private String userId;
 
 }

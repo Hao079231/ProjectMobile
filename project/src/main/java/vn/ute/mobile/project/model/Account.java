@@ -21,11 +21,9 @@ public class Account extends Auditable{
   @Id
   @GenericGenerator(name = "idGenerator", strategy = "vn.ute.mobile.project.service.id.CustomIdGenerator")
   @GeneratedValue(generator = "idGenerator")
-  private Long id;
+  private String id;
   @Column(name = "user_name", unique = true)
   private String username;
-  @Column(name = "full_name")
-  private String fullname;
   @Column(name = "email", unique = true)
   private String email;
   @Column(name = "pass_word")

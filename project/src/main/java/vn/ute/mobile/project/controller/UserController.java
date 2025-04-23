@@ -32,42 +32,41 @@ public class UserController {
   @Autowired
   private AccountRepository accountRepository;
 
-  @GetMapping("/get")
-  public ApiMessageDto<UserDto> get(){
-    ApiMessageDto<UserDto> apiMessageDto = new ApiMessageDto<>();
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
-      throw new RuntimeException("User not authenticated");
-    }
-    CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
-    User user = userRepository.findById(principal.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
-    apiMessageDto.setData(userMapper.fromUserToDto(user));
-    apiMessageDto.setMessage("Get user successfully");
-    return apiMessageDto;
-  }
-
-  @PutMapping("/update")
-  public ApiMessageDto<String> update(@RequestBody @Valid UpdateUserForm request){
-    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
-      throw new RuntimeException("User not authenticated");
-    }
-    CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
-    User user = userRepository.findById(principal.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
-    if (accountRepository.findAccountByUsername(request.getUsername()) != null){
-      throw new BabRequestException("User name already exist", ErrorCode.ACCOUNT_ERROR_USERNAME_EXIST);
-    }
-    Account account = accountRepository.findById(principal.getUserId()).orElseThrow(() -> new NotFoundException("Account not found"));
-
-    account.setUsername(request.getUsername());
-    account.setFullname(request.getFullname());
-    account.setEmail(request.getEmail());
-    accountRepository.save(account);
-
-    userMapper.updateUpdateUserToEntity(request, user);
-    userRepository.save(user);
-    apiMessageDto.setMessage("Update user successfully");
-    return apiMessageDto;
-  }
+//  @GetMapping("/get")
+//  public ApiMessageDto<UserDto> get(){
+//    ApiMessageDto<UserDto> apiMessageDto = new ApiMessageDto<>();
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
+//      throw new RuntimeException("User not authenticated");
+//    }
+//    CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+//    User user = userRepository.findById(principal.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
+//    apiMessageDto.setData(userMapper.fromUserToDto(user));
+//    apiMessageDto.setMessage("Get user successfully");
+//    return apiMessageDto;
+//  }
+//
+//  @PutMapping("/update")
+//  public ApiMessageDto<String> update(@RequestBody @Valid UpdateUserForm request){
+//    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
+//      throw new RuntimeException("User not authenticated");
+//    }
+//    CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
+//    User user = userRepository.findById(principal.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
+//    if (accountRepository.findAccountByUsername(request.getUsername()) != null){
+//      throw new BabRequestException("User name already exist", ErrorCode.ACCOUNT_ERROR_USERNAME_EXIST);
+//    }
+//    Account account = accountRepository.findById(principal.getUserId()).orElseThrow(() -> new NotFoundException("Account not found"));
+//
+//    account.setUsername(request.getUsername());
+//    account.setEmail(request.getEmail());
+//    accountRepository.save(account);
+//
+//    userMapper.updateUpdateUserToEntity(request, user);
+//    userRepository.save(user);
+//    apiMessageDto.setMessage("Update user successfully");
+//    return apiMessageDto;
+//  }
 }

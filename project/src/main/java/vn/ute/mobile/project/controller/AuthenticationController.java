@@ -57,19 +57,18 @@ public class AuthenticationController {
     }
     Account account = new Account();
     account.setUsername(request.getUsername());
-    account.setFullname(request.getFullname());
     account.setEmail(request.getEmail());
     account.setPassword(passwordEncoder.encode(request.getPassword()));
     account.setStatus(AppConstant.ACCOUNT_STATUS_PENDING);
 
     String otpCode = generateOTP();
 
-    User user = userMapper.fromCreateUserToEntity(request);
+    User user = new User();
     user.setAccount(account);
     user.setStatus(AppConstant.ACCOUNT_STATUS_PENDING);
     user.setOtp(otpCode);
     userRepository.save(user);
-    sendOTPEmail(request.getEmail(), request.getFullname(), otpCode);
+    sendOTPEmail(request.getEmail(), otpCode);
     apiMessageDto.setMessage("Registration successful. An OTP has been sent to your email");
     return apiMessageDto;
   }
@@ -121,10 +120,10 @@ public class AuthenticationController {
     return String.valueOf(otpNumber);
   }
 
-  private void sendOTPEmail(String email, String fullname, String otpCode) {
+  private void sendOTPEmail(String email, String otpCode) {
     String subject = "Xác thực tài khoản - Mã OTP của bạn";
 
-    String emailContent = "Kính gửi " + fullname + ",\n\n"
+    String emailContent = "Kính gửi " + email + ",\n\n"
         + "Cảm ơn bạn đã đăng ký tài khoản tại ứng dụng của chúng tôi. "
         + "Để hoàn tất quá trình đăng ký, vui lòng sử dụng mã OTP sau đây:\n\n"
         + "Mã OTP: " + otpCode + "\n\n"

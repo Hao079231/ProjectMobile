@@ -21,7 +21,7 @@ public class JwtUtil {
     return Keys.hmacShaKeyFor(secret.getBytes());
   }
 
-  public String generateToken(String username, Long userId) {
+  public String generateToken(String username, String userId) {
     return Jwts.builder()
         .setSubject(username)
         .claim("userId", userId)
@@ -42,8 +42,8 @@ public class JwtUtil {
     return getClaims(token).getSubject();
   }
 
-  public Long extractUserId(String token) {
-    return Long.parseLong(extractAllClaims(token).get("userId").toString());
+  public String extractUserId(String token) {
+    return extractAllClaims(token).get("userId").toString();
   }
 
   private Claims getClaims(String token) {

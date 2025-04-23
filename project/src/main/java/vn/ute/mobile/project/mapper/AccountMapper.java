@@ -14,7 +14,6 @@ import vn.ute.mobile.project.model.Account;
 public interface AccountMapper {
   @Mapping(source = "id", target = "id")
   @Mapping(source = "username", target = "username")
-  @Mapping(source = "fullname", target = "fullname")
   @Mapping(source = "email", target = "email")
   @BeanMapping(ignoreByDefault = true)
   @Named("fromAccountToDto")

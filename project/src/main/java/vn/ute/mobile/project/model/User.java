@@ -20,15 +20,21 @@ import lombok.Setter;
 @AllArgsConstructor
 public class User extends Auditable{
   @Id
-  private Long id;
+  private String id;
   @OneToOne
   @MapsId
   @JoinColumn(name = "id")
   private Account account;
-  @Column(name = "gender")
-  private Integer gender;
   @Column(name = "phone")
   private String phone;
   @Column(name = "otp")
   private String otp;
+  @Column(name = "address")
+  private String address;
+  @Column(name = "image")
+  private String image;
+  @Column(name = "score")
+  private Integer score = 0;
+  @Column(name = "ordinal-number")
+  private Integer ordinalNumber;
 }
