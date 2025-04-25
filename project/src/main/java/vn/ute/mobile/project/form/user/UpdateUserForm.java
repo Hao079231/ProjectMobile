@@ -14,6 +14,7 @@ public class UpdateUserForm {
   @NotEmpty(message = "email cannot null")
   private String email;
   private String phone;
+  @NotEmpty(message = "address cannot null")
   private String address;
   private String image;
 }
