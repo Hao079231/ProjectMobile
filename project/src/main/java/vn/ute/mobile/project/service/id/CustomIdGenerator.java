@@ -5,6 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 public class CustomIdGenerator implements IdentifierGenerator {
   private static final Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
@@ -12,19 +15,41 @@ public class CustomIdGenerator implements IdentifierGenerator {
   private static final long MAX_SUFFIX = 99999999L;
 
   @Override
-  public Object generate(SharedSessionContractImplementor session, Object o) {
-    String entityName = o.getClass().getSimpleName();
+  public Object generate(SharedSessionContractImplementor session, Object entity) {
+    String entityName = entity.getClass().getSimpleName();
 
     // Lấy hoặc tạo counter cho entity này
     AtomicLong counter = counters.computeIfAbsent(entityName, k -> new AtomicLong(0));
 
-    long nextValue = counter.incrementAndGet();
+    String generatedId;
+    boolean idExists;
 
-    if (nextValue > MAX_SUFFIX) {
-      throw new RuntimeException("Exceeded the maximum ID limit for " + entityName + ": " + PREFIX + MAX_SUFFIX);
-    }
+    do {
+      long nextValue = counter.incrementAndGet();
 
-    // Tạo ID dạng String: PREFIX + entityName + nextValue
-    return PREFIX + entityName + String.format("%08d", nextValue);
+      if (nextValue > MAX_SUFFIX) {
+        throw new RuntimeException("Exceeded the maximum ID limit for " + entityName + ": " + PREFIX + MAX_SUFFIX);
+      }
+
+      // Tạo ID dạng String: PREFIX + entityName + nextValue
+      generatedId = PREFIX + entityName + String.format("%08d", nextValue);
+
+      // Kiểm tra xem ID đã tồn tại trong cơ sở dữ liệu hay chưa
+      idExists = checkIdExists(session, entity.getClass(), generatedId);
+
+    } while (idExists); // Lặp lại cho đến khi tìm được ID không trùng
+
+    return generatedId;
+  }
+
+  private boolean checkIdExists(SharedSessionContractImplementor session, Class<?> entityClass, String id) {
+    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaQuery<Long> query = cb.createQuery(Long.class);
+    Root<?> root = query.from(entityClass);
+
+    query.select(cb.count(root)).where(cb.equal(root.get("id"), id));
+
+    Long count = session.createQuery(query).getSingleResult();
+    return count > 0;
   }
 }

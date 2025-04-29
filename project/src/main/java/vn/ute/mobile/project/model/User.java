@@ -29,12 +29,6 @@ public class User extends Auditable{
   private String phone;
   @Column(name = "otp")
   private String otp;
-  @Column(name = "address")
-  private String address;
   @Column(name = "image")
   private String image;
-  @Column(name = "score")
-  private Integer score = 0;
-  @Column(name = "ordinal-number")
-  private Integer ordinalNumber;
 }

@@ -17,14 +17,12 @@ import vn.ute.mobile.project.model.User;
     uses = {AccountMapper.class})
 public interface UserMapper {
   @Mapping(source = "phone", target = "phone")
-  @Mapping(source = "address", target = "address")
   @Mapping(source = "image", target = "image")
   @BeanMapping(ignoreByDefault = true)
   @Named("fromCreateUserToEntity")
   User fromCreateUserToEntity(CreateUserForm createUserForm);
 
   @Mapping(source = "phone", target = "phone")
-  @Mapping(source = "address", target = "address")
   @Mapping(source = "image", target = "image")
   @BeanMapping(ignoreByDefault = true)
   @Named("updateUpdateUserToEntity")
@@ -33,10 +31,7 @@ public interface UserMapper {
   @Mapping(source = "id", target = "id")
   @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToDto")
   @Mapping(source = "phone", target = "phone")
-  @Mapping(source = "address", target = "address")
   @Mapping(source = "image", target = "image")
-  @Mapping(source = "score", target = "score")
-  @Mapping(source = "ordinalNumber", target = "ordinalNumber")
   @BeanMapping(ignoreByDefault = true)
   @Named("fromUserToDto")
   UserDto fromUserToDto(User user);

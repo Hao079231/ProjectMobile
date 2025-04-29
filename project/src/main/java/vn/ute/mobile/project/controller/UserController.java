@@ -52,6 +52,12 @@ public class UserController extends AbasicController{
     accountRepository.save(account);
 
     userMapper.updateUpdateUserToEntity(request, user);
+    if (!request.getPhone().isEmpty()){
+      user.setPhone(request.getPhone());
+    }
+    if (!request.getImage().isEmpty()){
+      user.setImage(request.getImage());
+    }
     userRepository.save(user);
     apiMessageDto.setMessage("Update user successfully");
     return apiMessageDto;
