@@ -12,4 +12,8 @@ public class ErrorCode {
 
   //Error code notice
   public static final String NOTICE_ERROR_NOTFOUND = "ERROR-NOTICE-000";
+
+  //Error code vocabulary
+  public static final String VOCABULARY_ERROR_NOTFOUND = "ERROR-VOCABULARY-000";
+  public static final String VOCABULARY_ERROR_EXIST = "ERROR-VOCABULARY-001";
 }
