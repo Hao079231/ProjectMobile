@@ -54,6 +54,7 @@ public class NoticeController extends AbasicController{
     ApiMessageDto<ResponseListDto<List<NoticeDto>>> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(()-> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
+    request.setUserId(getCurrentUser());
     Page<Notice> notices = noticeRepository.findAll(request.getSpecification(), pageable);
     List<NoticeDto> noticeDtos = noticeMapper.fromNoticeToDtoList(notices.getContent());
     ResponseListDto<List<NoticeDto>> response = new ResponseListDto<>(noticeDtos, notices.getTotalElements(), notices.getTotalPages());
@@ -67,7 +68,7 @@ public class NoticeController extends AbasicController{
     ApiMessageDto<NoticeDto> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(()-> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
-    Notice notice = noticeRepository.findById(id).orElseThrow(()-> new NotFoundException("Notice not found",
+    Notice notice = noticeRepository.findByIdAndUser(id, user).orElseThrow(()-> new NotFoundException("Notice not found",
         ErrorCode.NOTICE_ERROR_NOTFOUND));
     apiMessageDto.setData(noticeMapper.fromNoticeToDto(notice));
     apiMessageDto.setMessage("Get notice successfully");
@@ -79,7 +80,7 @@ public class NoticeController extends AbasicController{
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(()-> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
-    Notice notice = noticeRepository.findById(id).orElseThrow(()-> new NotFoundException("Notice not found",
+    Notice notice = noticeRepository.findByIdAndUser(id, user).orElseThrow(()-> new NotFoundException("Notice not found",
         ErrorCode.NOTICE_ERROR_NOTFOUND));
     noticeMapper.updateNoticeForm(request, notice);
     noticeRepository.save(notice);
@@ -92,7 +93,7 @@ public class NoticeController extends AbasicController{
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
-    Notice notice = noticeRepository.findById(id).orElseThrow(()-> new NotFoundException("Notice not found",
+    Notice notice = noticeRepository.findByIdAndUser(id, user).orElseThrow(()-> new NotFoundException("Notice not found",
         ErrorCode.NOTICE_ERROR_NOTFOUND));
     noticeRepository.delete(notice);
     apiMessageDto.setMessage("Delete notice successfully");
