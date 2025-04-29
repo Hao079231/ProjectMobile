@@ -9,4 +9,7 @@ public class ErrorCode {
   public static final String ACCOUNT_ERROR_BADREQUEST = "ERROR-ACCOUNT-004";
   public static final String ACCOUNT_ERROR_NOTACTIVE = "ERROR-ACCOUNT-005";
 
+
+  //Error code notice
+  public static final String NOTICE_ERROR_NOTFOUND = "ERROR-NOTICE-000";
 }
