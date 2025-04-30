@@ -42,8 +42,10 @@ public class UserController extends AbasicController{
   public ApiMessageDto<String> update(@RequestBody @Valid UpdateUserForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found"));
-    if (accountRepository.findAccountByUsername(request.getUsername()) != null){
-      throw new BabRequestException("User name already exist", ErrorCode.ACCOUNT_ERROR_USERNAME_EXIST);
+    if (!user.getAccount().getUsername().equals(request.getUsername())){
+      if (accountRepository.findAccountByUsername(request.getUsername()) != null){
+        throw new BabRequestException("User name already exist", ErrorCode.ACCOUNT_ERROR_USERNAME_EXIST);
+      }
     }
     Account account = accountRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("Account not found"));
 
