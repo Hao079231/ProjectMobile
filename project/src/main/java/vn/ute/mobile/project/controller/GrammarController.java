@@ -45,6 +45,9 @@ public class GrammarController extends AbasicController{
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
+    if (grammarRepository.existsByName(request.getName())){
+      throw new BabRequestException("Grammar name already exist", ErrorCode.GRAMMAR_ERROR_EXIST);
+    }
     Grammar grammar = grammarMapper.fromCreateToGrammar(request);
     grammar.setUser(user);
     grammar.setStatus(AppConstant.APP_STATUS_ACTIVE);

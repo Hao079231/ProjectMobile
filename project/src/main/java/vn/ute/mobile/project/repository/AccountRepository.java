@@ -8,5 +8,9 @@ import vn.ute.mobile.project.model.Account;
 public interface AccountRepository extends JpaRepository<Account, String>, JpaSpecificationExecutor<Account> {
   Optional<Account> findByEmail(String email);
 
-  Account findAccountByUsername(String username);
+  Optional<Account> findAccountByUsername(String username);
+
+  boolean existsByUsername(String username);
+
+  boolean existsByEmail(String email);
 }

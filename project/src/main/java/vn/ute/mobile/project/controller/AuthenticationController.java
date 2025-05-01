@@ -54,8 +54,11 @@ public class AuthenticationController {
   @PostMapping("/register")
   public ApiMessageDto<String> register(@RequestBody @Valid CreateUserForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    if (accountRepository.findAccountByUsername(request.getUsername()) != null){
+    if (accountRepository.existsByUsername(request.getUsername())){
       throw new BabRequestException("User name already exist", ErrorCode.ACCOUNT_ERROR_USERNAME_EXIST);
+    }
+    if (accountRepository.existsByEmail(request.getEmail())){
+      throw new BabRequestException("Email already exist", ErrorCode.ACCOUNT_ERROR_EMAIL_EXIST);
     }
     Account account = new Account();
     account.setUsername(request.getUsername());
@@ -83,7 +86,7 @@ public class AuthenticationController {
 
     User user = userRepository.findByIdAndOtp(account.getId(), request.getOtp());
     if (user == null){
-      throw new NotFoundException("OTP code invalid");
+      throw new NotFoundException("OTP code invalid", ErrorCode.ACCOUNT_ERROR_OTP_INVALID);
     }
 
     account.setStatus(AppConstant.ACCOUNT_STATUS_ACTIVE);
@@ -97,14 +100,14 @@ public class AuthenticationController {
   @PostMapping("/login")
   public ApiMessageDto<AuthDto> login(@RequestBody @Valid CreateAuthForm request){
     ApiMessageDto<AuthDto> apiMessageDto = new ApiMessageDto<>();
-    Account user = accountRepository.findAccountByUsername(request.getUsername());
-    if (user == null){
-      throw new NotFoundException("Account not found", ErrorCode.ACCOUNT_ERROR_NOTFOUND);
-    }
+    Account user = accountRepository.findAccountByUsername(request.getUsername()).orElseThrow(() ->
+        new BabRequestException("Invalid username or password", ErrorCode.ACCOUNT_ERROR_BADREQUEST));
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new BabRequestException("Invalid username or password", ErrorCode.ACCOUNT_ERROR_BADREQUEST);
     }
-
+    if (!user.getStatus().equals(AppConstant.ACCOUNT_STATUS_ACTIVE)){
+      throw new BabRequestException("Account cannot active", ErrorCode.ACCOUNT_ERROR_UNKNOWN);
+    }
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
