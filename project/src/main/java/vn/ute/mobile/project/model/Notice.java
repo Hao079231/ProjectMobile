@@ -19,7 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notice {
+public class Notice extends Auditable{
   @Id
   @GenericGenerator(name = "idGenerator", strategy = "vn.ute.mobile.project.service.id.CustomIdGenerator")
   @GeneratedValue(generator = "idGenerator")
