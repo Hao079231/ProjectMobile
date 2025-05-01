@@ -16,4 +16,8 @@ public class ErrorCode {
   //Error code vocabulary
   public static final String VOCABULARY_ERROR_NOTFOUND = "ERROR-VOCABULARY-000";
   public static final String VOCABULARY_ERROR_EXIST = "ERROR-VOCABULARY-001";
+
+  //Error code grammar
+  public static final String GRAMMAR_ERROR_NOTFOUND = "ERROR-GRAMMAR-000";
+  public static final String GRAMMAR_ERROR_EXIST = "ERROR-GRAMMAR-001";
 }

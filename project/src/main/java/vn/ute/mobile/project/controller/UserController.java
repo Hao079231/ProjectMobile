@@ -2,6 +2,7 @@ package vn.ute.mobile.project.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import vn.ute.mobile.project.repository.UserRepository;
 
 @RestController
 @RequestMapping("/v1/api/user")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController extends AbasicController{
   @Autowired
   private UserRepository userRepository;
@@ -48,18 +50,10 @@ public class UserController extends AbasicController{
       }
     }
     Account account = accountRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("Account not found"));
-
     account.setUsername(request.getUsername());
-    account.setEmail(request.getEmail());
     accountRepository.save(account);
 
     userMapper.updateUpdateUserToEntity(request, user);
-    if (!request.getPhone().isEmpty()){
-      user.setPhone(request.getPhone());
-    }
-    if (!request.getImage().isEmpty()){
-      user.setImage(request.getImage());
-    }
     userRepository.save(user);
     apiMessageDto.setMessage("Update user successfully");
     return apiMessageDto;

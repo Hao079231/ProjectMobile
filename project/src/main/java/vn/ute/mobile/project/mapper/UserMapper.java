@@ -19,12 +19,6 @@ public interface UserMapper {
   @Mapping(source = "phone", target = "phone")
   @Mapping(source = "image", target = "image")
   @BeanMapping(ignoreByDefault = true)
-  @Named("fromCreateUserToEntity")
-  User fromCreateUserToEntity(CreateUserForm createUserForm);
-
-  @Mapping(source = "phone", target = "phone")
-  @Mapping(source = "image", target = "image")
-  @BeanMapping(ignoreByDefault = true)
   @Named("updateUpdateUserToEntity")
   void updateUpdateUserToEntity(UpdateUserForm updateUserForm, @MappingTarget User user);
 

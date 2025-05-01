@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.ute.mobile.project.constant.AppConstant;
 import vn.ute.mobile.project.dto.ApiMessageDto;
 import vn.ute.mobile.project.dto.ErrorCode;
 import vn.ute.mobile.project.dto.ResponseListDto;
@@ -30,6 +32,7 @@ import vn.ute.mobile.project.repository.VocabularyRepository;
 
 @RestController
 @RequestMapping("/v1/api/vocabulary")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class VocabularyController extends AbasicController{
   @Autowired
   private VocabularyRepository vocabularyRepository;
@@ -48,6 +51,7 @@ public class VocabularyController extends AbasicController{
     }
     Vocabulary vocabulary = vocabularyMapper.fromCreateToVocabulary(request);
     vocabulary.setUser(user);
+    vocabulary.setStatus(AppConstant.APP_STATUS_ACTIVE);
     vocabularyRepository.save(vocabulary);
     apiMessageDto.setMessage("Create vocabulary successfully");
     return apiMessageDto;
