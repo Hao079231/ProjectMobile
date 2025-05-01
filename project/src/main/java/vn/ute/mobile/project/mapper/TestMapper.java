@@ -35,6 +35,7 @@ public interface TestMapper {
   @BeanMapping(ignoreByDefault = true)
   void updateTest(UpdateTestForm updateTestForm, @MappingTarget Test test);
 
+  @Mapping(source = "id", target = "id")
   @Mapping(source = "question", target = "question")
   @Mapping(source = "answerA", target = "answerA")
   @Mapping(source = "answerB", target = "answerB")

@@ -75,7 +75,7 @@ public class TestController {
     Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found", ErrorCode.TEST_ERROR_NOTFOUND));
     if (!test.getQuestion().equals(request.getQuestion())){
       if (testRepository.existsByQuestion(request.getQuestion())){
-        throw new BabRequestException("Test question already exist", ErrorCode.TEST_ERROR_EXIST);
+        throw new BabRequestException("Question already exist", ErrorCode.TEST_ERROR_EXIST);
       }
     }
     testMapper.updateTest(request, test);
