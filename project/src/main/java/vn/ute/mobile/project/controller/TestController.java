@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.ute.mobile.project.constant.AppConstant;
 import vn.ute.mobile.project.dto.ApiMessageDto;
 import vn.ute.mobile.project.dto.ErrorCode;
 import vn.ute.mobile.project.dto.ResponseListDto;
@@ -43,6 +44,7 @@ public class TestController {
       throw new BabRequestException("Question already exist", ErrorCode.TEST_ERROR_EXIST);
     }
     Test test = testMapper.fromCreateToTest(request);
+    test.setStatus(AppConstant.APP_STATUS_ACTIVE);
     testRepository.save(test);
     apiMessageDto.setMessage("Create test successfully");
     return apiMessageDto;
