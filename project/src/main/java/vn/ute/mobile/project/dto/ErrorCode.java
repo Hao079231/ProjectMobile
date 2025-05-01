@@ -7,8 +7,7 @@ public class ErrorCode {
   public static final String ACCOUNT_ERROR_USERNAME_EXIST = "ERROR-ACCOUNT-002";
   public static final String ACCOUNT_ERROR_OTP_INVALID = "ERROR-ACCOUNT-003";
   public static final String ACCOUNT_ERROR_BADREQUEST = "ERROR-ACCOUNT-004";
-  public static final String ACCOUNT_ERROR_NOTACTIVE = "ERROR-ACCOUNT-005";
-
+  public static final String ACCOUNT_ERROR_EMAIL_EXIST = "ERROR-ACCOUNT-005";
 
   //Error code notice
   public static final String NOTICE_ERROR_NOTFOUND = "ERROR-NOTICE-000";
@@ -20,4 +19,8 @@ public class ErrorCode {
   //Error code grammar
   public static final String GRAMMAR_ERROR_NOTFOUND = "ERROR-GRAMMAR-000";
   public static final String GRAMMAR_ERROR_EXIST = "ERROR-GRAMMAR-001";
+
+  //Error code test
+  public static final String TEST_ERROR_NOTFOUND = "ERROR-TEST-000";
+  public static final String TEST_ERROR_EXIST = "ERROR-TEST-001";
 }

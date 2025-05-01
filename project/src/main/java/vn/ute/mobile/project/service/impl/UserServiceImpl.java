@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.ute.mobile.project.constant.AppConstant;
+import vn.ute.mobile.project.dto.ErrorCode;
+import vn.ute.mobile.project.exception.NotFoundException;
 import vn.ute.mobile.project.model.Account;
 import vn.ute.mobile.project.repository.AccountRepository;
 
@@ -20,10 +21,8 @@ public class UserServiceImpl implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) {
-    Account user = accountRepository.findAccountByUsername(username);
-    if (user == null){
-      throw new UsernameNotFoundException("Invalid username or password");
-    }
+    Account user = accountRepository.findAccountByUsername(username).orElseThrow(() ->
+        new NotFoundException("Account not found", ErrorCode.ACCOUNT_ERROR_NOTFOUND));
     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
         new SimpleGrantedAuthority("ROLE_USER")
     );
