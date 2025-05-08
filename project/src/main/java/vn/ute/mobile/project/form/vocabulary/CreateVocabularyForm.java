@@ -7,8 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateVocabularyForm {
-  @NotEmpty(message = "word cannot empty")
+  @NotEmpty(message = "image cannot null")
+  private String image;
+  @NotEmpty(message = "word cannot null")
   private String word;
-  @NotEmpty(message = "meaning cannot empty")
-  private String meaning;
+  @NotEmpty(message = "answer cannot null")
+  private String answer;
+  @NotEmpty(message = "topic cannot null")
+  private String topicId;
 }
