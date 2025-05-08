@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class VocabularyDto {
   private String id;
+  private String image;
   private String word;
-  private String meaning;
+  private String answer;
 }

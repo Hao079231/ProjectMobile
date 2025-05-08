@@ -27,4 +27,5 @@ public class ErrorCode {
   //Error topic code
   public static final String TOPIC_ERROR_NOTFOUND = "ERROR-TOPIC-000";
   public static final String TOPIC_ERROR_EXIST = "ERROR-TOPIC-001";
+  public static final String TOPIC_ERROR_NULL = "ERROR-TOPIC-002";
 }

@@ -18,19 +18,22 @@ import vn.ute.mobile.project.model.Vocabulary;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
     uses = {UserMapper.class})
 public interface VocabularyMapper {
+  @Mapping(source = "image", target = "image")
   @Mapping(source = "word", target = "word")
-  @Mapping(source = "meaning", target = "meaning")
+  @Mapping(source = "answer", target = "answer")
   @BeanMapping(ignoreByDefault = true)
   Vocabulary fromCreateToVocabulary(CreateVocabularyForm createVocabularyForm);
 
+  @Mapping(source = "image", target = "image")
   @Mapping(source = "word", target = "word")
-  @Mapping(source = "meaning", target = "meaning")
+  @Mapping(source = "answer", target = "answer")
   @BeanMapping(ignoreByDefault = true)
   void updateVocabulary(UpdateVocabularyForm updateVocabularyForm, @MappingTarget Vocabulary vocabulary);
 
   @Mapping(source = "id", target = "id")
+  @Mapping(source = "image", target = "image")
   @Mapping(source = "word", target = "word")
-  @Mapping(source = "meaning", target = "meaning")
+  @Mapping(source = "answer", target = "answer")
   @BeanMapping(ignoreByDefault = true)
   @Named("fromVocabularyToDto")
   VocabularyDto fromVocabularyToDto(Vocabulary vocabulary);

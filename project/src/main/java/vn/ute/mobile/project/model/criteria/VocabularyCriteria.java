@@ -16,6 +16,7 @@ import vn.ute.mobile.project.model.Vocabulary;
 public class VocabularyCriteria implements Serializable {
   private static final long serialVersionUID = 1L;
   private String word;
+  private String topicId;
 
   public Specification<Vocabulary> getSpecification(){
     return new Specification<Vocabulary>() {
@@ -26,6 +27,9 @@ public class VocabularyCriteria implements Serializable {
         List<Predicate> predicates = new ArrayList<>();
         if (StringUtils.hasText(getWord())){
           predicates.add(cb.like(cb.lower(root.get("word")), "%" + getWord().toLowerCase() + "%"));
+        }
+        if (StringUtils.hasText(getTopicId())) {
+          predicates.add(cb.equal(root.get("topicModel").get("id"), getTopicId()));
         }
         return cb.and(predicates.toArray(new Predicate[0]));
       }

@@ -24,11 +24,13 @@ public class Vocabulary extends Auditable{
   @GenericGenerator(name = "idGenerator", strategy = "vn.ute.mobile.project.service.id.CustomIdGenerator")
   @GeneratedValue(generator = "idGenerator")
   private String id;
+  @Column(name = "image")
+  private String image;
   @Column(name = "word", unique = true)
   private String word;
-  @Column(name = "meaning")
-  private String meaning;
+  @Column(name = "answer")
+  private String answer;
   @ManyToOne
-  @JoinColumn(name = "user_id")
-  private User user;
+  @JoinColumn(name = "topic_id")
+  private TopicModel topicModel;
 }

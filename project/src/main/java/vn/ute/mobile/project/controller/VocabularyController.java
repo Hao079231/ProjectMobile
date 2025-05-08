@@ -24,9 +24,11 @@ import vn.ute.mobile.project.exception.NotFoundException;
 import vn.ute.mobile.project.form.vocabulary.CreateVocabularyForm;
 import vn.ute.mobile.project.form.vocabulary.UpdateVocabularyForm;
 import vn.ute.mobile.project.mapper.VocabularyMapper;
+import vn.ute.mobile.project.model.TopicModel;
 import vn.ute.mobile.project.model.User;
 import vn.ute.mobile.project.model.Vocabulary;
 import vn.ute.mobile.project.model.criteria.VocabularyCriteria;
+import vn.ute.mobile.project.repository.TopicModelRepository;
 import vn.ute.mobile.project.repository.UserRepository;
 import vn.ute.mobile.project.repository.VocabularyRepository;
 
@@ -40,58 +42,64 @@ public class VocabularyController extends AbasicController{
   private VocabularyMapper vocabularyMapper;
   @Autowired
   private UserRepository userRepository;
+  @Autowired
+  private TopicModelRepository topicModelRepository;
 
   @PostMapping("/create")
   public ApiMessageDto<String> create(@RequestBody @Valid CreateVocabularyForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    User user = userRepository.findById(getCurrentUser()).orElseThrow(()-> new NotFoundException("User not found",
-        ErrorCode.ACCOUNT_ERROR_NOTFOUND));
     if (vocabularyRepository.existsByWord(request.getWord())){
       throw new BabRequestException("Vocabulary already exist", ErrorCode.VOCABULARY_ERROR_EXIST);
     }
+    TopicModel topicModel = topicModelRepository.findById(request.getTopicId()).orElseThrow(() -> new NotFoundException("Topic not found",
+        ErrorCode.TOPIC_ERROR_NOTFOUND));
     Vocabulary vocabulary = vocabularyMapper.fromCreateToVocabulary(request);
-    vocabulary.setUser(user);
+    vocabulary.setTopicModel(topicModel);
     vocabulary.setStatus(AppConstant.APP_STATUS_ACTIVE);
     vocabularyRepository.save(vocabulary);
     apiMessageDto.setMessage("Create vocabulary successfully");
     return apiMessageDto;
   }
 
-  @GetMapping("/search")
-  public ApiMessageDto<ResponseListDto<List<VocabularyDto>>> getList(VocabularyCriteria request, Pageable pageable){
+  @GetMapping("/list/{topicId}")
+  public ApiMessageDto<ResponseListDto<List<VocabularyDto>>> getList(VocabularyCriteria request, @PathVariable String topicId,Pageable pageable){
     ApiMessageDto<ResponseListDto<List<VocabularyDto>>> apiMessageDto = new ApiMessageDto<>();
+    User user = userRepository.findById(getCurrentUser()).orElseThrow(()-> new NotFoundException("User not found", ErrorCode.ACCOUNT_ERROR_NOTFOUND));
+    TopicModel topicModel = topicModelRepository.findById(topicId).orElseThrow(() -> new NotFoundException("Topic not found", ErrorCode.TOPIC_ERROR_NOTFOUND));
+    request.setTopicId(topicId);
     Page<Vocabulary> vocabularies = vocabularyRepository.findAll(request.getSpecification(), pageable);
     List<VocabularyDto> vocabularyDtos = vocabularyMapper.fromVocabularyToDtoList(vocabularies.getContent());
     ResponseListDto<List<VocabularyDto>> response = new ResponseListDto<>(vocabularyDtos, vocabularies.getTotalElements(), vocabularies.getTotalPages());
     apiMessageDto.setData(response);
-    apiMessageDto.setMessage("Search vocabulary successfully");
+    apiMessageDto.setMessage("Get list vocabulary successfully");
     return apiMessageDto;
   }
 
-  @GetMapping("/get/{id}")
-  public ApiMessageDto<VocabularyDto> get(@PathVariable String id){
-    ApiMessageDto<VocabularyDto> apiMessageDto = new ApiMessageDto<>();
-    Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(()-> new NotFoundException("Vocabulary not found",
-        ErrorCode.VOCABULARY_ERROR_NOTFOUND));
-    apiMessageDto.setData(vocabularyMapper.fromVocabularyToDto(vocabulary));
-    apiMessageDto.setMessage("Get vocabulary successfully");
-    return apiMessageDto;
-  }
+//  @GetMapping("/get/{id}")
+//  public ApiMessageDto<VocabularyDto> get(@PathVariable String id){
+//    ApiMessageDto<VocabularyDto> apiMessageDto = new ApiMessageDto<>();
+//    Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(()-> new NotFoundException("Vocabulary not found",
+//        ErrorCode.VOCABULARY_ERROR_NOTFOUND));
+//    apiMessageDto.setData(vocabularyMapper.fromVocabularyToDto(vocabulary));
+//    apiMessageDto.setMessage("Get vocabulary successfully");
+//    return apiMessageDto;
+//  }
 
-  @PutMapping("/update/{id}")
-  public ApiMessageDto<String> update(@RequestBody @Valid UpdateVocabularyForm request, @PathVariable String id){
+  @PutMapping("/update")
+  public ApiMessageDto<String> update(@RequestBody @Valid UpdateVocabularyForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found",
-        ErrorCode.ACCOUNT_ERROR_NOTFOUND));
-    Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(()-> new NotFoundException("Vocabulary not found",
+    Vocabulary vocabulary = vocabularyRepository.findById(request.getId()).orElseThrow(()-> new NotFoundException("Vocabulary not found",
         ErrorCode.VOCABULARY_ERROR_NOTFOUND));
+    TopicModel topicModel = topicModelRepository.findById(request.getTopicId()).orElseThrow(() -> new NotFoundException("Topic not found",
+        ErrorCode.TOPIC_ERROR_NOTFOUND));
     if (!vocabulary.getWord().equals(request.getWord())){
       if (vocabularyRepository.existsByWord(request.getWord())){
         throw new BabRequestException("Vocabulary already exist", ErrorCode.VOCABULARY_ERROR_EXIST);
       }
     }
     vocabularyMapper.updateVocabulary(request, vocabulary);
-    vocabulary.setUser(user);
+    vocabulary.setTopicModel(topicModel);
+    vocabularyRepository.save(vocabulary);
     apiMessageDto.setMessage("Update vocabulary successfully");
     return apiMessageDto;
   }
@@ -99,8 +107,6 @@ public class VocabularyController extends AbasicController{
   @DeleteMapping("/delete/{id}")
   public ApiMessageDto<String> delete(@PathVariable String id){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-    User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found",
-        ErrorCode.ACCOUNT_ERROR_NOTFOUND));
     Vocabulary vocabulary = vocabularyRepository.findById(id).orElseThrow(()-> new NotFoundException("Vocabulary not found",
         ErrorCode.VOCABULARY_ERROR_NOTFOUND));
     vocabularyRepository.delete(vocabulary);
