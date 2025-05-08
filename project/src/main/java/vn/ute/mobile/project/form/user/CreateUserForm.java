@@ -17,6 +17,4 @@ public class CreateUserForm {
   @Password
   @NotEmpty(message = "password cannot null")
   private String password;
-  private String phone;
-  private String image;
 }

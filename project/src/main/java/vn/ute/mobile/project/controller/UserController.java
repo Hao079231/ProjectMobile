@@ -52,8 +52,6 @@ public class UserController extends AbasicController{
     Account account = accountRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("Account not found"));
     account.setUsername(request.getUsername());
     accountRepository.save(account);
-
-    userMapper.updateUpdateUserToEntity(request, user);
     userRepository.save(user);
     apiMessageDto.setMessage("Update user successfully");
     return apiMessageDto;
