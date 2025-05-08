@@ -9,6 +9,4 @@ import lombok.Setter;
 public class UpdateUserForm {
   @NotEmpty(message = "user name cannot null")
   private String username;
-  private String phone;
-  private String image;
 }

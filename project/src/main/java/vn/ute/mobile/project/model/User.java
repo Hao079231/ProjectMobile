@@ -25,10 +25,6 @@ public class User extends Auditable{
   @MapsId
   @JoinColumn(name = "id")
   private Account account;
-  @Column(name = "phone")
-  private String phone;
   @Column(name = "otp")
   private String otp;
-  @Column(name = "image")
-  private String image;
 }

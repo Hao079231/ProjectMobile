@@ -10,7 +10,5 @@ import vn.ute.mobile.project.dto.account.AccountDto;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
   private String id;
-  private String phone;
-  private String image;
   private AccountDto account;
 }
