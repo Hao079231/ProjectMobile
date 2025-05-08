@@ -13,7 +13,6 @@ import vn.ute.mobile.project.model.User;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
     uses = {AccountMapper.class})
 public interface UserMapper {
-  @Mapping(source = "id", target = "id")
   @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToDto")
   @BeanMapping(ignoreByDefault = true)
   @Named("fromUserToDto")

@@ -23,4 +23,8 @@ public class ErrorCode {
   //Error code test
   public static final String TEST_ERROR_NOTFOUND = "ERROR-TEST-000";
   public static final String TEST_ERROR_EXIST = "ERROR-TEST-001";
+
+  //Error topic code
+  public static final String TOPIC_ERROR_NOTFOUND = "ERROR-TOPIC-000";
+  public static final String TOPIC_ERROR_EXIST = "ERROR-TOPIC-001";
 }

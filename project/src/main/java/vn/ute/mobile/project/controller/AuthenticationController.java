@@ -92,6 +92,7 @@ public class AuthenticationController {
     account.setStatus(AppConstant.ACCOUNT_STATUS_ACTIVE);
     accountRepository.save(account);
     user.setStatus(AppConstant.ACCOUNT_STATUS_ACTIVE);
+    userRepository.clearOtpById(user.getId());
     userRepository.save(user);
     apiMessageDto.setMessage("Verify successful");
     return apiMessageDto;
