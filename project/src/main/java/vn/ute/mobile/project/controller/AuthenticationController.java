@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vn.ute.mobile.project.config.JwtUtil;
 import vn.ute.mobile.project.constant.AppConstant;
@@ -20,6 +21,8 @@ import vn.ute.mobile.project.dto.ErrorCode;
 import vn.ute.mobile.project.exception.BabRequestException;
 import vn.ute.mobile.project.exception.NotFoundException;
 import vn.ute.mobile.project.form.CreateAuthForm;
+import vn.ute.mobile.project.form.CreateForgetPasswordForm;
+import vn.ute.mobile.project.form.CreateResetPasswordForm;
 import vn.ute.mobile.project.form.user.CreateUserForm;
 import vn.ute.mobile.project.form.verify.CreateVerifyUserForm;
 import vn.ute.mobile.project.mapper.UserMapper;
@@ -120,6 +123,34 @@ public class AuthenticationController {
     return apiMessageDto;
   }
 
+  @PostMapping("/forget-password")
+  public ApiMessageDto<String> sendEmail(@RequestBody CreateForgetPasswordForm request){
+    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+    Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("Account not found",
+            ErrorCode.ACCOUNT_ERROR_NOTFOUND));
+    account.setStatus(AppConstant.ACCOUNT_STATUS_PENDING);
+    accountRepository.save(account);
+    User user = userRepository.findById(account.getId()).orElseThrow(() -> new NotFoundException("User not found",
+        ErrorCode.ACCOUNT_ERROR_NOTFOUND));
+    user.setOtp(generateOTP());
+    user.setStatus(AppConstant.ACCOUNT_STATUS_PENDING);
+    userRepository.save(user);
+    sendOTPResetPassword(account.getEmail(), user.getOtp(), account.getUsername());
+    apiMessageDto.setMessage("Send email successfully");
+    return apiMessageDto;
+  }
+
+  @PostMapping("/reset-password")
+  public ApiMessageDto<String> resetPassword(@RequestBody @Valid CreateResetPasswordForm request){
+    ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+    Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("Account not found",
+        ErrorCode.ACCOUNT_ERROR_NOTFOUND));
+    account.setPassword(passwordEncoder.encode(request.getPassword()));
+    apiMessageDto.setMessage("Reset password successfully");
+    accountRepository.save(account);
+    return apiMessageDto;
+  }
+
   private String generateOTP() {
     Random random = new Random();
     int otpNumber = 100000 + random.nextInt(900000);
@@ -135,6 +166,21 @@ public class AuthenticationController {
         + "Mã OTP: " + otpCode + "\n\n"
         + "Vui lòng không chia sẻ mã này với bất kỳ ai để đảm bảo an toàn cho tài khoản của bạn.\n\n"
         + "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.\n\n"
+        + "Trân trọng,\n"
+        + "Đội ngũ phát triển ứng dụng";
+
+    emailService.sendEmail(email, subject, emailContent);
+  }
+
+  private void sendOTPResetPassword(String email, String otpCode, String username) {
+    String subject = "Yêu cầu đặt lại mật khẩu - Mã OTP của bạn";
+
+    String emailContent = "Kính gửi " + username + ",\n\n"
+        + "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. "
+        + "Vui lòng sử dụng mã OTP sau đây để xác thực và tiến hành đặt lại mật khẩu:\n\n"
+        + "Mã OTP: " + otpCode + "\n\n"
+        + "Vui lòng không chia sẻ mã này với bất kỳ ai để đảm bảo an toàn cho tài khoản của bạn.\n\n"
+        + "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi để được hỗ trợ.\n\n"
         + "Trân trọng,\n"
         + "Đội ngũ phát triển ứng dụng";
 
