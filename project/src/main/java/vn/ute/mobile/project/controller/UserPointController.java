@@ -1,5 +1,6 @@
 package vn.ute.mobile.project.controller;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,16 +34,24 @@ public class UserPointController extends AbasicController{
   @Autowired
   private UserPointMapper userPointMapper;
 
+  @Transactional
   @PostMapping("/create")
   public ApiMessageDto<String> create(@RequestBody @Valid CreateUserPointForm request){
     ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
-    UserPoint userPoint = userPointMapper.fromCreateToUserPoint(request);
-    userPoint.setUser(user);
-    userPoint.setTime(LocalDateTime.now());
-    userPoint.setStatus(AppConstant.APP_STATUS_ACTIVE);
-    userPointRepository.save(userPoint);
+    UserPoint userPoint = userPointRepository.findByUserId(user.getId()).orElse(null);
+    if (userPoint == null){
+      userPoint = userPointMapper.fromCreateToUserPoint(request);
+      userPoint.setUser(user);
+      userPoint.setTime(LocalDateTime.now());
+      userPoint.setStatus(AppConstant.APP_STATUS_ACTIVE);
+      userPointRepository.save(userPoint);
+    } else {
+      if (userPoint.getPoint() < request.getPoint()){
+        userPointRepository.updatePointById(userPoint.getId(), request.getPoint());
+      }
+    }
     apiMessageDto.setMessage("Create user point successfully");
     return apiMessageDto;
   }
@@ -52,7 +61,7 @@ public class UserPointController extends AbasicController{
     ApiMessageDto<List<UserPointDto>> apiMessageDto = new ApiMessageDto<>();
     User user = userRepository.findById(getCurrentUser()).orElseThrow(() -> new NotFoundException("User not found",
         ErrorCode.ACCOUNT_ERROR_NOTFOUND));
-    List<UserPoint> userPoints = userPointRepository.findAll();
+    List<UserPoint> userPoints = userPointRepository.findAllByOrderByPointDesc();
     List<UserPointDto> userPointDtos = userPointMapper.fromUserPointToDtoList(userPoints);
     apiMessageDto.setData(userPointDtos);
     apiMessageDto.setMessage("Get list user point successfully");
